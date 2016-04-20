@@ -28,7 +28,8 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-d3.json("output.json", function(error, nyc) {
+// http://stackoverflow.com/questions/24704839/geojson-to-topojson-converter-with-attributes
+d3.json("mapshaper.json", function(error, nyc) {
 	console.log(nyc);
   var subunits = topojson.feature(nyc, nyc.objects.nyct2010);
   console.log(subunits);
