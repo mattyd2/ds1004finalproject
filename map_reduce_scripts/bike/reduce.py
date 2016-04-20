@@ -43,7 +43,7 @@ def amountcalc(ridertype, duration):
 
 def manhattandist(start_lat, start_lon, end_lat, end_lon):
     '''this function is used to calculate the approximate manhattan distance
-    between two sets of lat and lon points. it was built referencing 
+    between two sets of lat and lon points. it was built referencing
 
     http://stackoverflow.com/questions/32923363/manhattan-distance-for-two-geolocations
     http://www.movable-type.co.uk/scripts/latlong.html
@@ -66,32 +66,31 @@ duration = 0.0
 
 for line in sys.stdin:
     key, values = line.strip().split('\t')
-    # print '+_+_+_+_+_+', key
     valueList = values.split(',')
-    duration = float(valueList[8])
     ridertype = valueList[9]
-
+    # print "key", key, "==", 'currentKey', currentKey
     if key == currentKey:
         totaltrips += 1.0
-        duration += duration
+        # print 'totaltrips', totaltrips
+        duration += float(valueList[8])
+        # print 'duration', duration
         amount += amountcalc(ridertype, duration)
+        # print 'amount', amount
         # print "amount += amountcalc(ridertype, duration)", amount
     else:
-        # if the currentKey is NOT None then evals to True
         if currentKey is not None:
-            if distance is None:
-                start_lat = float(valueList[2])
-                start_lon = float(valueList[3])
-                end_lat = float(valueList[6])
-                end_lon = float(valueList[7])
-                distance = "{0:.2f}".format(manhattandist(start_lat, start_lon, end_lat,
-                                         end_lon))
+            start_lat = float(valueList[2])
+            start_lon = float(valueList[3])
+            end_lat = float(valueList[6])
+            end_lon = float(valueList[7])
+            distance = "{0:.2f}".format(manhattandist(start_lat, start_lon,
+                                                      end_lat, end_lon))
             avg_amount = "{0:.2f}".format(amount/totaltrips)
-            if duration > 0:
-                avg_duration = "{0:.2f}".format(duration/totaltrips)
-            if totaltrips > 5:
-                print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (currentKey, avg_duration, duration, distance,
-                                                      avg_amount, amount, totaltrips)
+            avg_duration = "{0:.2f}".format((duration/60)/totaltrips)
+            currentKey = 'bike'+currentKey
+            print "%s\t%s,%s,%s,%s,%s" % (currentKey, ",".join(valueList[0:7]),
+                                          avg_duration, distance, avg_amount,
+                                          totaltrips)
         currentKey = key
         totaltrips = 1.0
         duration = float(valueList[8])
@@ -102,7 +101,8 @@ start_lat = float(valueList[2])
 start_lon = float(valueList[3])
 end_lat = float(valueList[6])
 end_lon = float(valueList[7])
-distance = manhattandist(start_lat, start_lon, end_lat, end_lon)
-print "final entry"
-print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (currentKey, avg_duration, duration, distance,
-                                      avg_amount, amount, totaltrips)
+distance = "{0:.2f}".format(manhattandist(start_lat, start_lon, end_lat,
+                                          end_lon))
+currentKey = 'bike'+currentKey
+print "%s\t%s,%s,%s,%s,%s" % (currentKey, ",".join(valueList[0:7]), avg_duration,
+                              distance, avg_amount, totaltrips)
