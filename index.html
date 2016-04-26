@@ -4,11 +4,19 @@
 
 /* CSS goes here. */
 
+/*.subunit {
+  fill: orange;
+}
+*/
+.subunit:hover {
+  fill: orangered ;
+}
+
 
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="//d3js.org/topojson.v1.min.js"></script>
+<!--<script src="//d3js.org/topojson.v1.min.js"></script>-->
 <script>
 
 var width = 960,
@@ -21,6 +29,8 @@ var projection = d3.geo.mercator()
     .scale(100000)
     .translate([width / 2, height / 2]);
 
+var heatcols = d3.scale.linear().range(['blue', 'red']);
+
 var path = d3.geo.path()
     .projection(projection);
 
@@ -28,23 +38,47 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-// http://stackoverflow.com/questions/24704839/geojson-to-topojson-converter-with-attributes
-d3.json("mapshaper.json", function(error, nyc) {
-	console.log(nyc);
-  var subunits = topojson.feature(nyc, nyc.objects.nyct2010);
-  console.log(subunits);
-  svg.append("path")
-      .datum(topojson.feature(nyc, nyc.objects.nyct2010))
-      .attr("d", path);
+//d3.json("output.json", function(error, nyc) {
+//d3.json("nyct2010.json", function(error, nyc) {
+d3.json("nyct2010.json", function(json) {
+    console.log(json);
+    //Bind data and create one path per GeoJSON feature
+    svg.selectAll("path")
+      .data(json.features)
+      .enter()
+      .append("path")
+      .attr("id", function(d) { return  d.properties.BoroName+d.properties.CT2010; })
+      .attr("class", function(d) { return "subunit" ; })
+      .attr("d", path)
+      .attr("fill","#666666");
 
-  svg.selectAll(".subunit")
-    .data(topojson.feature(nyc, nyc.objects.nyct2010).features)
-    .enter().append("path")
-    .attr("class", function(d) { return "subunit " + d.id; })
-    .attr("fill", '#9c9ede')
-    .attr("d", path);
+d3.csv("census_income.csv", function(income) {
+    console.log(income);
+    heatcols.domain(d3.extent(income, function(d) { return +d.mean_income; }));
+    income.forEach(function(d){     
+      //console.log(+d.mean_income);
+      d3.select("#Manhattan"+d.CT2010)
+      .attr('fill',heatcols(+d.mean_income));
 
-    console.log(topojson.feature(nyc, nyc.objects.nyct2010).features);
+    });
+});
+
+
+ // console.log(nyc);
+ //  var subunits = topojson.feature(nyc, nyc.objects.nyct2010);
+ //  console.log(subunits);
+ //  svg.append("path")
+ //      .datum(topojson.feature(nyc, nyc.objects.nyct2010))
+ //      .attr("d", path);
+
+ //  svg.selectAll(".subunit")
+ //    .data(topojson.feature(nyc, nyc.objects.nyct2010).features)
+ //    .enter().append("path")
+ //    .attr("class", function(d) { return "subunit " + d.id; })
+ //    .attr("fill", '#9c9ede')
+ //    .attr("d", path);
+
+ //    console.log(topojson.feature(nyc, nyc.objects.nyct2010).features);
  	
 d3.csv("201401CitiBike_stations.csv", function(citibikedata) {
     //Create circles
