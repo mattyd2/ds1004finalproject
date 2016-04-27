@@ -45,6 +45,7 @@ def manhattandist(start_lat, start_lon, end_lat, end_lon):
     '''this function is used to calculate the approximate manhattan distance
     between two sets of lat and lon points. it was built referencing
 
+    http://stackoverflow.com/questions/15736995/how-can-i-quickly-estimate-the-distance-between-two-latitude-longitude-points
     http://stackoverflow.com/questions/32923363/manhattan-distance-for-two-geolocations
     http://www.movable-type.co.uk/scripts/latlong.html
 

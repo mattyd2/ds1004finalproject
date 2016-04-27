@@ -2,6 +2,7 @@
 
 import sys
 import math
+import shapefile
 from haversine import haversine
 
 currentKey = None
