@@ -61,24 +61,24 @@ def spanning_arborescence(arcs, sink):
         stack.extend(arcs_by_head[arc.tail])
     return solution_arc_by_tail
 
-fname = '/Users/matthewdunn/Dropbox/NYU/Spring2016/BigData/GroupProject/ds1004finalproject/generalized_map_reduce/bikedata.txt'
+fname = '/Users/matthewdunn/Dropbox/NYU/Spring2016/BigData/GroupProject/ds1004finalproject/generalized_map_reduce/busreduced2.txt'
 lines = [line.rstrip('\n') for line in open(fname)]
 final_list = []
 for i in lines:
     tmp = i.split(',')
     final_list.append(tmp)
-final_list = [[int(number) for number in group] for group in final_list]
+# final_list = [[int(number) for number in group] for group in final_list]
 super_final_list = []
 for i in final_list:
     arc = Arc._make([i[0], i[1], i[2]])
     super_final_list.append(arc)
-# print super_final_list
+print super_final_list
 
-min_tree = min_spanning_arborescence(super_final_list, 116)
+min_tree = min_spanning_arborescence(super_final_list, 100017)
 # min_tree = min_spanning_arborescence(super_final_list, 235)
 df = pd.DataFrame(min_tree.items())
 df.columns = ['start_id', 'tuple']
-df['orig'] = df['tuple'].apply(lambda x : 'b'+str(x.tail))
+df['orig'] = df['tuple'].apply(lambda x : 'bus'+str(x.tail))
 df['time'] = df['tuple'].apply(lambda x : x.weight)
-df['dest'] = df['tuple'].apply(lambda x : 'b'+str(x.head))
-df[['orig', 'time', 'dest']].to_csv('biketree.csv', index=False)
+df['dest'] = df['tuple'].apply(lambda x : 'bus'+str(x.head))
+df[['orig', 'time', 'dest']].to_csv('bustree.csv', index=False)
