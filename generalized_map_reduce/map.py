@@ -10,21 +10,24 @@ from shapely.geometry import shape, Point
 import math
 
 # load GeoJSON file containing sectors
-with open('../../nyccensustracts.json', 'r') as f:
-    js = json.load(f)
-
+# with open('../../nyccensustracts.json', 'r') as f:
+#     js = json.load(f)
 
 for line in sys.stdin:
     l = line.strip().split(',')
+    if 'key' not in l[0]:
+        key = l[0]
+        value = l[1]
+        print "%s\t%s" % (key, value)
 
-    # Citi Bike Mapper
-    if len(l) == 11:
-        if 'duration' not in l[10]:
+    # # Citi Bike Mapper
+    # if len(l) == 11:
+    #     if 'duration' not in l[10]:
 
-            start_station_id = str(int(float(l[3])))
-            end_station_id = str(int(float(l[2])))
-            duration = str(int(float(l[10])*60))
-            key = 'bus'+str(start_station_id)+str(end_station_id)
-            #               0                   1               2
-            value = start_station_id+','+end_station_id+','+duration
-            print "%s\t%s" % (key, value)
+    #         start_station_id = str(int(float(l[3])))
+    #         end_station_id = str(int(float(l[2])))
+    #         duration = str(int(float(l[10])*60))
+    #         key = 'bus'+str(start_station_id)+str(end_station_id)
+    #         #               0                   1               2
+    #         value = start_station_id+','+end_station_id+','+duration
+    #         print "%s\t%s" % (key, value)
