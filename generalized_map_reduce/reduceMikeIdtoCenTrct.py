@@ -17,7 +17,7 @@ for line in sys.stdin:
     valuesList = tmp.split(',')
     # lat = float(valuesList[0])
     # lon = float(valuesList[1])
-    
+
     # aggregrate values for given Key
     if key == currentKey:
         lat = float(valuesList[0])
