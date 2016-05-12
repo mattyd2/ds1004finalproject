@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# http://docs.aws.amazon.com/ElasticMapReduce/latest/DeveloperGuide/emr-plan-input-distributed-cache.html
-
 import sys
 from datetime import datetime
 import json
@@ -10,7 +8,7 @@ from shapely.geometry import shape, Point
 from geoindex import GeoGridIndex, GeoPoint
 
 # load GeoJSON file containing sectors
-with open('/Users/matthewdunn/Dropbox/NYU/Spring2016/BigData/GroupProject/nyccensustracts.json', 'r') as f:
+with open('./nyc.json', 'r') as f:
     js = json.load(f)
 
 
@@ -41,24 +39,26 @@ def geocoder(lat, lon, rad=.5):
                     return BoroCT2010
     return str(taxi_point)
 
+# read in the taxi data
 for line in sys.stdin:
     l = line.strip().split(',')
     if l[0] != 'vendor_id':
-        key = ','.join(l[0:3] + [l[5]])
 
         # get duration
         start_datetime = datetime.strptime(l[1], "%m/%d/%y %H:%M")
         end_datetime = datetime.strptime(l[2], "%m/%d/%y %H:%M")
         duration = end_datetime-start_datetime
-
+        duration_mins = (duration.seconds//60)%60
+        # get start and end censustracts
         start_census_tract = geocoder(float(l[6]), float(l[5]))
         end_census_tract = geocoder(float(l[10]), float(l[9]))
-        if start_census_tract is None:
-            startcounter += 1
-        if end_census_tract is None:
-            endcounter += 1
-        print start_census_tract, end_census_tract
 
-        #           0           1        2        3          4            5        6         7        8            9                    10                   11
-        value = l[5]+l[6]+','+l[1]+','+l[6]+','+l[5]+','+l[9]+l[10]+','+l[2]+','+l[10]+','+l[9]+','+l[17]+','+str(duration)+','+start_census_tract+','+end_census_tract
-        print "%s\t%s" % (key, value)
+        # create key from start and end censustracts
+        key = start_census_tract+"_"+end_census_tract
+
+        cost = l[17]
+        distance = l[4]
+
+        if start_census_tract is not None and end_census_tract is not None:
+            value = str(duration_mins)+','+cost+','+distance
+            print "%s\t%s" % (key, value)
