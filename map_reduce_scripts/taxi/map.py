@@ -5,50 +5,40 @@ from datetime import datetime
 import json
 import shapely
 from shapely.geometry import shape, Point
-from geoindex import GeoGridIndex, GeoPoint
+import urllib
 
-# load GeoJSON file containing sectors
-with open('./nyc.json', 'r') as f:
-    js = json.load(f)
+# read NYC shape file
+myurl = "https://s3.amazonaws.com/kve216-ds-1004-sp16/nyct2010.json"
+opener = urllib.URLopener()
+myfile = opener.open(myurl)
+js = json.load(myfile)
 
+# function returning census tract of a lat, lon
+def geocoder(lat, lon):
+    point = Point(lon, lat)
 
-index = GeoGridIndex()
-for feature in js['features']:
-    # print 'feature+_+_+_++_+\n', feature
-    properties = feature.get('properties')
-    # print 'properties+_+_+_+_+_\n', properties
-    BoroCT2010 = properties.get('BoroCT2010')
-    # print 'BoroCT2010+_+_++__+_\n', BoroCT2010
-    geometry = feature.get('geometry')
-    # print 'geometry+_+_+_+_+_+\n', geometry
-    polygon = shape(geometry)
-    lon, lat = polygon.representative_point().coords[0]
-    index.add_point(GeoPoint(lat, lon, ref=BoroCT2010))
-
-
-def geocoder(lat, lon, rad=.5):
-    taxi_point = GeoPoint(lat, lon)
-    for point, distance in index.get_nearest_points(taxi_point, rad, unit='km'):
-        for feature in js['features']:
+    # check each polygon to see if it contains the point
+    for feature in js['features']:
+        geometry = feature.get('geometry')
+        polygon = shape(geometry)
+        if polygon.contains(point):
             properties = feature.get('properties')
-            BoroCT2010 = properties.get('BoroCT2010')
-            if point.ref == BoroCT2010:
-                geometry = feature.get('geometry')
-                polygon = shape(geometry)
-                if polygon.contains(Point(lon, lat)):
-                    return BoroCT2010
-    return str(taxi_point)
+            census_tract = properties.get('BoroCT2010')
+            return census_tract
+    # if no census tract is found, return an invalid string
+    return "notfound"
 
 # read in the taxi data
 for line in sys.stdin:
     l = line.strip().split(',')
-    if l[0] != 'vendor_id':
-
+    # pass the header
+    if l[0] != 'VendorID' and len(l) == 19:
         # get duration
-        start_datetime = datetime.strptime(l[1], "%m/%d/%y %H:%M")
-        end_datetime = datetime.strptime(l[2], "%m/%d/%y %H:%M")
+        start_datetime = datetime.strptime(l[1], "%Y-%m-%d %H:%M:%S")
+        end_datetime = datetime.strptime(l[2], "%Y-%m-%d %H:%M:%S")
         duration = end_datetime-start_datetime
         duration_mins = (duration.seconds//60)%60
+        
         # get start and end censustracts
         start_census_tract = geocoder(float(l[6]), float(l[5]))
         end_census_tract = geocoder(float(l[10]), float(l[9]))
@@ -56,9 +46,11 @@ for line in sys.stdin:
         # create key from start and end censustracts
         key = start_census_tract+"_"+end_census_tract
 
+        # collect cost and distance data
         cost = l[17]
         distance = l[4]
 
-        if start_census_tract is not None and end_census_tract is not None:
+        # if the tracts found are valid, output key and values
+        if len(start_census_tract) == 7 and len(end_census_tract) == 7:
             value = str(duration_mins)+','+cost+','+distance
             print "%s\t%s" % (key, value)
