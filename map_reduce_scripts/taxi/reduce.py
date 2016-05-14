@@ -14,14 +14,10 @@ duration = 0.0
 for line in sys.stdin:
     key, values = line.strip().split('\t')
     valueList = values.split(',')
-    # print "key", key, "==", 'currentKey', currentKey
     if key == currentKey:
         totaltrips += 1.0
-        # print 'totaltrips', totaltrips
         duration += float(valueList[0])
-        # print 'duration', duration
         amount += float(valueList[1])
-        # print 'amount', amount
         distance += float(valueList[2])
     else:
         if currentKey is not None:
@@ -34,6 +30,7 @@ for line in sys.stdin:
             string_values = (str(avg_amount), str(avg_duration),
                              str(avg_distance), str(totaltrips))
 
+            # print output
             strings = deliminator.join(string_values)
             print "%s" % (strings)
 
@@ -44,6 +41,7 @@ for line in sys.stdin:
         amount = float(valueList[1])
         distance = float(valueList[2])
 
+# calculate averages
 avg_amount = "{0:.2f}".format(amount/totaltrips)
 avg_duration = "{0:.2f}".format(duration/totaltrips)
 avg_distance = "{0:.2f}".format(distance/totaltrips)
@@ -53,5 +51,6 @@ deliminator = ','
 string_values = (str(avg_amount), str(avg_duration),
                  str(avg_distance), str(totaltrips))
 
+# print output 
 strings = deliminator.join(string_values)
 print "%s" % (strings)
