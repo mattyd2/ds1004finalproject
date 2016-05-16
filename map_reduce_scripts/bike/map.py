@@ -2,7 +2,7 @@
 
 import sys
 
-with open('/Users/matthewdunn/Dropbox/NYU/Spring2016/BigData/GroupProject/nyccensustracts.json', 'r') as f:
+with open('./nyccensustracts.json', 'r') as f:
     js = json.load(f)
 
 
