@@ -1,6 +1,11 @@
 # ds1004finalproject
 Final project for Big Data DS 1004
 
+### Project
+The main focus of this project was to build a transit accessibility score for each of the 2000+ Census Tracts within the five boroughs of New York City (NYC) and relate it to Census Tract data on demographics. The transit accessibility score is an aggregated measure reflecting the time needed to travel from a given tract to all other tracts. NYC bus and train data from the NYC Metropolitan Transit Authority (MTA) are used in computing the accessibility score. Our analysis shows that usually but not always people in tracts with lower mean income tend to experience longer travel times than people in tracts with higher mean income, among other results.
+
+- Project Report and Poster are solid overviews of the focus of the project.
+
 ### Data
 Train Schedule Data 
 - http://web.mta.info/developers/data/nyct/subway/google_transit.zip
