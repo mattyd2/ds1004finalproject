@@ -8,9 +8,6 @@
   fill: orange;
 }
 */
-.subunit:hover {
-  fill: orangered ;
-}
 
 
 </style>
@@ -40,7 +37,7 @@ var svg = d3.select("body").append("svg")
 
 //d3.json("output.json", function(error, nyc) {
 //d3.json("nyct2010.json", function(error, nyc) {
-d3.json("nyct2010.json", function(json) {
+d3.json("data/nyct2010.json", function(json) {
     console.log(json);
     //Bind data and create one path per GeoJSON feature
     svg.selectAll("path")
@@ -52,7 +49,7 @@ d3.json("nyct2010.json", function(json) {
       .attr("d", path)
       .attr("fill","#666666");
 
-d3.csv("census_income.csv", function(income) {
+d3.csv("data/census_income.csv", function(income) {
     console.log(income);
     heatcols.domain(d3.extent(income, function(d) { return +d.mean_income; }));
     income.forEach(function(d){     
@@ -80,7 +77,7 @@ d3.csv("census_income.csv", function(income) {
 
  //    console.log(topojson.feature(nyc, nyc.objects.nyct2010).features);
  	
-d3.csv("201401CitiBike_stations.csv", function(citibikedata) {
+d3.csv("data/201401CitiBike_stations.csv", function(citibikedata) {
     //Create circles
 	svg.selectAll("circle")
 	.data(citibikedata)
